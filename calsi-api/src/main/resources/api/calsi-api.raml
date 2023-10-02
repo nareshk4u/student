@@ -1,0 +1,43 @@
+#%RAML 1.0
+title: calsi-api
+version: v2
+description: "this is for perform ops"
+
+traits:
+  query: !include /traits/trait.raml
+mediaType: application/json
+  
+/addition:
+  get:
+    is: [query]
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/addition-response.json
+
+/Substraction:
+  get:
+    is: [query]
+    responses:
+      200:
+        body:
+            example: !include /examples/substraction-response.json
+
+/multiplication:
+  get:
+    is: [query]
+    responses:
+      200:
+        body:
+            example: !include /examples/multiplication-response.json
+
+/division:
+  get:
+    is: [query]
+    responses:
+      200:
+        body:
+            example: !include /examples/division-response.json
+
+       
