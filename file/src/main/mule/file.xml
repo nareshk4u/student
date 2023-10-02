@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="315aaa3c-b52f-4f70-8516-61e811a9d440" >
+		<http:listener-connection host="0.0.0.0" port="8080" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="7e835f53-de70-46a7-ab34-b6bafbd1a476" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="823b6cb7-d29b-4d54-86cd-3daa20de3858" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Suguna!@#16" database="nareshdb1" />
+	</db:config>
+	<flow name="fileFlow1" doc:id="ac01f8e7-e695-45dc-bbbb-34902d40abdb" >
+		<http:listener doc:name="Listener" doc:id="abefba20-7f26-4290-91a1-e64bf051a3ee" config-ref="HTTP_Listener_config" path="foreach"/>
+		<ee:transform doc:name="Transform Message" doc:id="932be19c-56a9-4ffe-998e-cf534fdbdffd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+1 to 100 map
+{
+	id: 0 + $$,
+	name: "Naresh",
+	number: "123456789",
+	lname: "Reddy"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="b4106069-81ed-4418-9dc0-ab213ea2c88c" >
+			<logger level="INFO" doc:name="Logger" doc:id="79c10cd6-5589-4438-979d-c221281fe94e" message="#[payload]" />
+			<db:insert doc:name="Insert" doc:id="53c837a3-9639-4463-ba74-488ccf58baa1" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO student (id, name, number, lname)
+VALUES (:id, :name, :number, :lname); ]]></db:sql>
+			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+		</foreach>
+	</flow>
+</mule>
